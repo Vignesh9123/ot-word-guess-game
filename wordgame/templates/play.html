@@ -7,35 +7,41 @@
     {% endif %}
 
     
-    <div class="flex flex-col gap-1 items-center mt-5">
+    <div class="flex flex-col gap-1 items-center mt-5 h-[13.5rem] justify-start">
         {% for d in display %}
             <div class="grid grid-cols-5 gap-1 justify-items-center">
-            {% for row in d %}
-                <div class="{{ row.css_class }} w-10 h-10 flex items-center justify-center">
-                    {{ row.char }}
-                </div>
-            {% endfor %}
+                {% for row in d %}
+                    <div class="{{ row.css_class }} w-10 h-10 flex items-center justify-center">
+                        {{ row.char }}
+                    </div>
+                {% endfor %}
             </div>
         {% endfor %}
     </div>
-
+    
     {% if guesses >= 5 %}
         <h2 class="text-3xl font-bold text-center">Game Over</h2>
         <p class="text-lg font-bold text-center">The word was: {{ game.word.text }}</p>
+        <p class="text-3xl font-bold text-center">You lost!</p>
+        <a href="{% url 'index' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded  flex items-center justify-center my-5 w-fit mx-auto">Home</a>
         {% if game.won %}
             <p class="text-3xl font-bold text-center">You won!</p>
-        {% else %}
-            <p class="text-3xl font-bold text-center">You lost!</p>
+            <a href="{% url 'index' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded  flex items-center justify-center my-5 w-fit mx-auto">Home</a>
         {% endif %}
+    {% endif %}
+        
+    {% if game.won %}
+        <p class="text-3xl font-bold text-center">You won!</p>
+        <a href="{% url 'index' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center my-5 w-fit mx-auto">Home</a>
     {% endif %}
 
     <form method="post" class="flex flex-col gap-5 items-center mt-5">
         {% csrf_token %}
         <div class="grid grid-cols-2 justify-items-center">
             <label for="guess_text">Guess:</label>
-            <input type="text" name="guess_text" id="guess_text" class="bg-gray-300 p-1 rounded-md" required>
+            <input type="text" name="guess_text" id="guess_text" class="bg-gray-300 p-1 rounded-md" required {% if guesses >= 5 or game.finished %}disabled{% endif %}>
         </div>
         
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50" type="submit" {% if guesses >= 5 %}disabled{% endif %}>Guess</button>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50" type="submit" {% if guesses >= 5 or game.finished %}disabled{% endif %}>Guess</button>
     </form>
 {% endblock content %}

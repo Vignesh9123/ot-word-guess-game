@@ -1,4 +1,5 @@
 import datetime
+from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -24,11 +25,12 @@ def get_current_user(request):
 
 def index(request):
     user = get_current_user(request)
-    template = loader.get_template('index.html')
+    games_played_today = Game.objects.filter(user=user, started_at__date=datetime.date.today()).count()
     context = {
-        'user': user
+        'user': user,
+        'games_played_today': games_played_today
     }
-    return HttpResponse(template.render(context))
+    return render(request, 'index.html', context)
 
 def register(request):
     user = get_current_user(request)
@@ -85,6 +87,7 @@ def start_game(request):
     games_played_today = Game.objects.filter(user=user, started_at__date=datetime.date.today()).count()
     if games_played_today >= 3:
         print('games_played_today', games_played_today)
+        messages.error(request, 'You have already played 3 games today. Please come back tomorrow.')
         return redirect('index')
     print('games_played_today', games_played_today)
     game = Game.objects.create(user=user, word=Word.objects.order_by('?').first())
@@ -115,7 +118,6 @@ def play(request, game_id):
                 game.finished = True
                 game.won = True
                 game.save()
-                return redirect('index')
             
     else:
         form = GuessForm()
