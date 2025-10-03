@@ -37,3 +37,15 @@ class LoginForm(forms.Form):
             raise forms.ValidationError("Password must contain at least one special character from $, %, *, @.")
         
         return password
+
+class GuessForm(forms.Form):
+    guess_text = forms.CharField(max_length=5, min_length=5)
+
+    def clean_guess_text(self):
+        guess_text = self.cleaned_data['guess_text']
+
+        # guess_text must only contain uppercase letters
+        if not (guess_text.isalpha() or guess_text.isupper()):
+            raise forms.ValidationError("Guess text must only contain uppercase letters.")
+        
+        return guess_text

@@ -4,11 +4,15 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template import loader
 
-from .forms import LoginForm, RegisterForm
+from .forms import GuessForm, LoginForm, RegisterForm
 
 from .models import Game, User, Word
 
-
+css_classes = {
+    'gray': 'bg-gray-500',
+    'yellow': 'bg-yellow-500',
+    'green': 'bg-green-500'
+}
 def get_current_user(request):
     user_id = request.session.get('user_id')
     if user_id:
@@ -88,4 +92,59 @@ def start_game(request):
 
 def play(request, game_id):
     print('game_id', game_id)
-    return HttpResponse(f'Game {game_id}')
+    user = get_current_user(request)
+    if not user:
+        return redirect('index')
+    game = Game.objects.filter(user=user, id=game_id).first()
+    if not game:
+        return redirect('index')
+    if game.finished:
+        return redirect('index')
+    if game.guesses.count() >= 5:
+        game.finished = True
+        game.won = False
+        game.save()
+        return redirect('index')
+    if request.method == 'POST':
+        target = game.word.text
+        form = GuessForm(request.POST)
+        if form.is_valid():
+            guess_text = form.cleaned_data['guess_text']
+            guess = game.guesses.create(game=game, guess_text=guess_text)
+            if guess.guess_text == target:
+                game.finished = True
+                game.won = True
+                game.save()
+                return redirect('index')
+            
+            display = []
+            for g in game.guesses.all():
+                row = []
+                guess = g.guess_text
+                target_chars = list(target)
+                colors = ['gray' for _ in range(5)]
+
+                for i, c in enumerate(guess):
+                    if c == target_chars[i]:
+                        colors[i] = 'green'
+                        target_chars[i] = None
+                for i, c in enumerate(guess):
+                    if c in target_chars and colors[i] == 'gray':
+                        colors[i] = 'yellow'
+                        target_chars[target_chars.index(c)] = None
+                for i, c in enumerate(guess):    
+                    row.append({
+                            'char': c, 
+                            'color': colors[i], 
+                            'css_class': css_classes[colors[i]]
+                    })
+                display.append(row)
+    else:
+        form = GuessForm()
+    context = {
+        'game': game,
+        'form': form,
+        'display': display or [],
+        'guesses': len(game.guesses) or 0
+    }
+    return render(request, 'play.html', context)
