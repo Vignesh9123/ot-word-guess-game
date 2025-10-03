@@ -117,34 +117,34 @@ def play(request, game_id):
                 game.save()
                 return redirect('index')
             
-            display = []
-            for g in game.guesses.all():
-                row = []
-                guess = g.guess_text
-                target_chars = list(target)
-                colors = ['gray' for _ in range(5)]
-
-                for i, c in enumerate(guess):
-                    if c == target_chars[i]:
-                        colors[i] = 'green'
-                        target_chars[i] = None
-                for i, c in enumerate(guess):
-                    if c in target_chars and colors[i] == 'gray':
-                        colors[i] = 'yellow'
-                        target_chars[target_chars.index(c)] = None
-                for i, c in enumerate(guess):    
-                    row.append({
-                            'char': c, 
-                            'color': colors[i], 
-                            'css_class': css_classes[colors[i]]
-                    })
-                display.append(row)
     else:
         form = GuessForm()
+    display = []
+    for g in game.guesses.all():
+        row = []
+        guess = g.guess_text
+        target_chars = list(target)
+        colors = ['gray' for _ in range(5)]
+
+        for i, c in enumerate(guess):
+            if c == target_chars[i]:
+                colors[i] = 'green'
+                target_chars[i] = None
+        for i, c in enumerate(guess):
+            if c in target_chars and colors[i] == 'gray':
+                colors[i] = 'yellow'
+                target_chars[target_chars.index(c)] = None
+        for i, c in enumerate(guess):    
+            row.append({
+                    'char': c, 
+                    'color': colors[i], 
+                    'css_class': css_classes[colors[i]]
+            })
+        display.append(row)
     context = {
         'game': game,
         'form': form,
         'display': display or [],
-        'guesses': len(game.guesses) or 0
+        'guesses': game.guesses.count()
     }
     return render(request, 'play.html', context)
