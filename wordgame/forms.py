@@ -49,3 +49,9 @@ class GuessForm(forms.Form):
             raise forms.ValidationError("Guess text must only contain uppercase letters.")
         
         return guess_text
+
+class AdminDayForm(forms.Form):
+    date = forms.DateField()
+
+class AdminUserForm(forms.Form):
+    username = forms.CharField(max_length=150, min_length=5)

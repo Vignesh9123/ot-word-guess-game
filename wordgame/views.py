@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template import loader
 
-from .forms import GuessForm, LoginForm, RegisterForm
+from .forms import AdminDayForm, AdminUserForm, GuessForm, LoginForm, RegisterForm
 
 from .models import Game, User, Word
 
@@ -150,3 +150,71 @@ def play(request, game_id):
         'guesses': game.guesses.count()
     }
     return render(request, 'play.html', context)
+
+def get_admin_day_report(date):
+    # Return number of users played and number of correct guesses for that day
+    games_on_date = Game.objects.filter(started_at__date=date)
+    users_played = games_on_date.values('user').distinct().count()
+    correct_guesses = games_on_date.filter(won=True).count()
+    # For table display, return as a list of rows with headers
+    class Report(list):
+        headers = ['Number of Users Played', 'Number of Correct Guesses']
+    report = Report()
+    report.append([users_played, correct_guesses])
+    return report
+
+def get_admin_user_report(username):
+    # Return number of games played and number of correct guesses for that user on each date
+    user = User.objects.filter(username=username).first()
+    games_played = user.games.count()
+    correct_guesses = user.games.filter(won=True).count()
+    # For table display, return as a list of rows with headers
+    class Report(list):
+        headers = ['Date', 'Number of Games Played', 'Number of Correct Guesses']
+    report = Report()
+    for game in user.games.all():
+        report.append([game.started_at.date(), games_played, correct_guesses])
+    return report
+    
+
+def admin_day(request):
+    user = get_current_user(request)
+    if not user or not user.is_admin:
+        return redirect('index')
+    if request.method == 'POST':
+        form = AdminDayForm(request.POST)
+        if form.is_valid():
+            date = form.cleaned_data['date']
+            report = get_admin_day_report(date)
+            context = {
+                'report': report,
+                'form': form
+            }
+            return render(request, 'admin_day.html', context)
+    else:
+        form = AdminDayForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'admin_day.html', context)
+
+def admin_user(request):
+    user = get_current_user(request)
+    if not user or not user.is_admin:
+        return redirect('index')
+    if request.method == 'POST':
+        form = AdminUserForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            report = get_admin_user_report(username)
+            context = {
+                'report': report,
+                'form': form
+            }
+            return render(request, 'admin_user.html', context)
+    else:
+        form = AdminUserForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'admin_user.html', context)

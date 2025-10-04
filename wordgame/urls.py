@@ -9,4 +9,6 @@ urlpatterns = [
     path("logout", views.logout, name="logout"),
     path("start_game", views.start_game, name="start_game"),
     path("play/<int:game_id>", views.play, name="play"),
+    path("admin/day", views.admin_day, name="admin_day"),
+    path("admin/user", views.admin_user, name="admin_user")
 ]
