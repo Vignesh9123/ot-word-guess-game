@@ -1,4 +1,5 @@
 import datetime
+from django import template
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.http import HttpResponse
@@ -147,7 +148,9 @@ def play(request, game_id):
         'game': game,
         'form': form,
         'display': display or [],
-        'guesses': game.guesses.count()
+        'guesses': game.guesses.count(),
+        'remaining_rows': [""] * (5 - game.guesses.count()),
+        'list_of_5': list(range(5))
     }
     return render(request, 'play.html', context)
 
@@ -210,7 +213,8 @@ def admin_user(request):
             report = get_admin_user_report(username)
             context = {
                 'report': report,
-                'form': form
+                'form': form,
+                'username': username
             }
             return render(request, 'admin_user.html', context)
     else:
