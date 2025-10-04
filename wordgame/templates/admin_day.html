@@ -1,8 +1,9 @@
-<% extends "layout.html" %>
+{% extends "layout.html" %}
 {% block content %}
 <h1 class="text-3xl font-bold text-center">Admin</h1>
 
 <form method="post" class="flex flex-col gap-5 items-center mt-5">
+    {% csrf_token %}
     <div>
         <label for="date">Select the date you want the report for:</label>
         <input type="date" name="date" id="date" class="bg-gray-300 p-1 rounded-md" required>
@@ -13,7 +14,7 @@
 
 {% if report %}
 <h2 class="text-3xl font-bold text-center">Report</h2>
-<div>
+<div class="flex justify-center items-center mt-5">
     <table class="table-auto">
         <tr>
             {% for header in report.headers %}

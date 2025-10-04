@@ -155,7 +155,7 @@ def get_admin_day_report(date):
     games_on_date = Game.objects.filter(started_at__date=date)
     users_played = games_on_date.values('user').distinct().count()
     correct_guesses = games_on_date.filter(won=True).count()
-    class Report(list):
+    class Report():
         headers = ['Number of Users Played', 'Number of Correct Guesses']
         values = []
     report = Report()
@@ -164,14 +164,17 @@ def get_admin_day_report(date):
 
 def get_admin_user_report(username):
     user = User.objects.filter(username=username).first()
-    games_played = user.games.count()
-    correct_guesses = user.games.filter(won=True).count()
-    class Report(list):
+    class Report():
         headers = ['Date', 'Number of Games Played', 'Number of Correct Guesses']
         values = []
     report = Report()
-    for game in user.games.all():
-        report.values.append([game.started_at.date(), games_played, correct_guesses])
+    if user:
+        dates = user.games.values_list('started_at__date', flat=True).distinct()
+        for date in dates:
+            games_on_date = user.games.filter(started_at__date=date)
+            games_played_on_date = games_on_date.count()
+            correct_guesses_on_date = games_on_date.filter(won=True).count()
+            report.values.append([date, games_played_on_date, correct_guesses_on_date])
     return report
     
 

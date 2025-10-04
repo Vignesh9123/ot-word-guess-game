@@ -13,6 +13,12 @@
 <div class="flex flex-col gap-5 items-center mt-5">
     <a href="{% url 'start_game' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Start
         Game</a>
+        {% if user.is_admin %}
+        <div class="flex gap-5 justify-center items-center mt-5">
+            <a href="{% url 'admin_day' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Day Report for Admin</a>
+            <a href="{% url 'admin_user' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">User Report for Admin</a>
+        </div>
+        {% endif %}
     </div>
     {% else %}
     <div class="flex flex-col gap-5 items-center mt-5">
