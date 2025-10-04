@@ -1,20 +1,83 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1 class="text-3xl font-bold text-center">Register</h1>
-    {% if form and form.errors %}
-    {{ form.as_p }}
-    {% endif %}
-    <form method="post" class="flex flex-col gap-5 items-center mt-5">
-        {% csrf_token %}
-        <div class="grid grid-cols-2 justify-items-center">
-            <label for="username">Username:</label>
-            <input type="text" name="username" id="username" class="bg-gray-300 p-1 rounded-md" required>
+<div class="flex justify-center items-center min-h-[70vh]">
+    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Register</h1>
+
+        {% if form and form.errors %}
+        <div class="mb-4 p-3 rounded-lg bg-red-100 border border-red-300 text-red-700 text-sm">
+            Please correct the highlighted fields.
         </div>
-        <div class="grid grid-cols-2 justify-items-center">
-            <label for="password">Password:</label>
-            <input type="password" name="password" id="password" class="bg-gray-300 p-1 rounded-md" required>
+        {% endif %}
+
+        <form method="post" class="flex flex-col gap-5">
+            {% csrf_token %}
+
+            <div class="flex flex-col">
+                <label for="username" class="text-gray-700 font-medium mb-1">Username</label>
+                <input type="text" name="username" id="username" required
+                    class="bg-gray-100 border {% if form.username.errors %}border-red-500{% else %}border-gray-300{% endif %}
+                           rounded-lg p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                {% if form.username.errors %}
+                <p class="text-sm text-red-600 mt-1">{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex flex-col relative">
+                <label for="password" class="text-gray-700 font-medium mb-1">Password</label>
+                <input type="password" name="password" id="password" required
+                    class="bg-gray-100 border {% if form.password.errors %}border-red-500{% else %}border-gray-300{% endif %}
+                           rounded-lg p-2 pr-10 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                <button type="button" id="togglePassword" 
+                    class="absolute right-3 top-9 text-gray-500 hover:text-gray-700">
+                    <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                        stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 
+                               9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                </button>
+                {% if form.password.errors %}
+                <p class="text-sm text-red-600 mt-1">{{ form.password.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition transform hover:scale-[1.02]">
+                Register
+            </button>
+        </form>
+
+        <div class="mt-6 text-center text-sm text-gray-600">
+            Already have an account?
+            <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Login</a>
         </div>
-        
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">Register</button>
-    </form>
+    </div>
+</div>
+
+<script>
+document.getElementById("togglePassword").addEventListener("click", function () {
+    const passwordInput = document.getElementById("password");
+    const eyeIcon = document.getElementById("eyeIcon");
+
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7
+                                   0.489-1.561 1.334-2.94 2.458-4.058m3.396-2.267A9.953 
+                                   9.953 0 0112 5c4.477 0 8.268 2.943 9.542 7a10.05 
+                                   10.05 0 01-4.132 5.225M15 12a3 3 0 11-6 0 3 3 0 016 0z" />`;
+    } else {
+        passwordInput.type = "password";
+        eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 
+                                   9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 
+                                   0-8.268-2.943-9.542-7z" />`;
+    }
+});
+</script>
 {% endblock content %}

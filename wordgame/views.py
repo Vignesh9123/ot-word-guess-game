@@ -68,7 +68,7 @@ def login(request):
                 request.session['user_id'] = user.id
                 return redirect('index')
             else:
-                form.add_error('username', 'Invalid username or password. Please ensure you have registered.')
+                form.add_error(None, 'Invalid username or password. Please ensure you have registered.')
     else:
         form = LoginForm()
     context = {
