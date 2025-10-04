@@ -152,28 +152,26 @@ def play(request, game_id):
     return render(request, 'play.html', context)
 
 def get_admin_day_report(date):
-    # Return number of users played and number of correct guesses for that day
     games_on_date = Game.objects.filter(started_at__date=date)
     users_played = games_on_date.values('user').distinct().count()
     correct_guesses = games_on_date.filter(won=True).count()
-    # For table display, return as a list of rows with headers
     class Report(list):
         headers = ['Number of Users Played', 'Number of Correct Guesses']
+        values = []
     report = Report()
-    report.append([users_played, correct_guesses])
+    report.values.append([users_played, correct_guesses])
     return report
 
 def get_admin_user_report(username):
-    # Return number of games played and number of correct guesses for that user on each date
     user = User.objects.filter(username=username).first()
     games_played = user.games.count()
     correct_guesses = user.games.filter(won=True).count()
-    # For table display, return as a list of rows with headers
     class Report(list):
         headers = ['Date', 'Number of Games Played', 'Number of Correct Guesses']
+        values = []
     report = Report()
     for game in user.games.all():
-        report.append([game.started_at.date(), games_played, correct_guesses])
+        report.values.append([game.started_at.date(), games_played, correct_guesses])
     return report
     
 

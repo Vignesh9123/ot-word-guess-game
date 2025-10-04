@@ -20,7 +20,7 @@
                 <th class="border border-gray-300 p-2">{{ header }}</th>
             {% endfor %}
         </tr>
-    {% for row in report %}
+    {% for row in report.values %}
         <tr>
             {% for cell in row %}
                 <td class="border border-gray-300 p-2">{{ cell }}</td>
