@@ -1,10 +1,7 @@
 import datetime
-from django import template
 from django.contrib import messages
 from django.contrib.auth import authenticate
-from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from django.template import loader
 
 from .forms import AdminDayForm, AdminUserForm, GuessForm, LoginForm, RegisterForm
 
@@ -206,20 +203,18 @@ def admin_user(request):
     user = get_current_user(request)
     if not user or not user.is_admin:
         return redirect('index')
+    all_users = User.objects.filter(is_staff=False).order_by('username')  # fetch all users for dropdown
+    report = None
+    selected_username = None
+
     if request.method == 'POST':
-        form = AdminUserForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            report = get_admin_user_report(username)
-            context = {
-                'report': report,
-                'form': form,
-                'username': username
-            }
-            return render(request, 'admin_user.html', context)
-    else:
-        form = AdminUserForm()
+        username = request.POST.get('username')
+        selected_username = username
+        report = get_admin_user_report(username)
+
     context = {
-        'form': form
+        'users': all_users,
+        'report': report,
+        'username': selected_username
     }
     return render(request, 'admin_user.html', context)

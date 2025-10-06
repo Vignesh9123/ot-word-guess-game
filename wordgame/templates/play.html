@@ -1,13 +1,19 @@
 {% extends "layout.html" %}
-
 {% block content %}
-    <h1 class="text-3xl font-bold text-center mb-5">Play</h1>
+<div class="min-h-[80vh] flex flex-col items-center justify-center text-gray-100 px-4">
 
-    <div class="flex flex-col gap-2 items-center mt-5">
+    
+    <div class="flex flex-col gap-2 items-center mb-6">
         {% for row in display %}
             <div class="grid grid-cols-5 gap-2">
                 {% for cell in row %}
-                    <div class="{{ cell.css_class }} size-12 rounded-md text-lg font-semibold text-center uppercase flex items-center justify-center">
+                    <div class="{{ cell.css_class }} 
+                                size-12 rounded-md text-lg font-semibold 
+                                flex items-center justify-center uppercase transition-all duration-200
+                                {% if cell.css_class == 'bg-green-500' %} bg-green-600 text-white shadow-lg shadow-green-600/30 
+                                {% elif cell.css_class == 'bg-yellow-500' %} bg-yellow-600 text-white shadow-lg shadow-yellow-600/30 
+                                {% elif cell.css_class == 'bg-gray-500' %} bg-gray-700 text-gray-200 
+                                {% else %} bg-gray-800 border border-gray-600 text-gray-300 {% endif %}">
                         {{ cell.char }}
                     </div>
                 {% endfor %}
@@ -17,50 +23,55 @@
         {% for _ in remaining_rows %}
             <div class="grid grid-cols-5 gap-2">
                 {% for _ in list_of_5 %}
-                    <div class="bg-gray-300 size-12 rounded-md text-lg font-semibold text-center uppercase flex items-center justify-center">
+                    <div class="bg-gray-800 border border-gray-700 size-12 rounded-md text-lg font-semibold text-gray-500 text-center uppercase flex items-center justify-center">
                         -
                     </div>
                 {% endfor %}
             </div>
         {% endfor %}
     </div>
-    
-    
+
     {% if guesses >= 5 and not game.won %}
-        <div class="text-center mt-5">
-            <h2 class="text-3xl font-bold text-red-600">Game Over</h2>
-            <p class="text-lg font-semibold">The word was: <span class="font-bold uppercase">{{ game.word.text }}</span></p>
-            <p class="text-xl font-bold text-gray-700">You lost!</p>
+        <div class="text-center mt-5 space-y-2">
+            <h2 class="text-3xl font-bold text-red-500 drop-shadow">Game Over</h2>
+            <p class="text-lg">The word was: 
+                <span class="font-bold uppercase text-yellow-400 tracking-wide">{{ game.word.text }}</span>
+            </p>
+            <p class="text-xl font-semibold text-gray-300">Better luck next time!</p>
             <a href="{% url 'index' %}" 
-               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-3 inline-block">
-                Home
+               class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-5 rounded-lg shadow transition-transform transform">
+                Return Home
             </a>
         </div>
     {% endif %}
 
     {% if game.won %}
-        <div class="text-center mt-5">
-            <p class="text-3xl font-bold text-green-600">You won!</p>
+        <div class="text-center mt-5 space-y-2">
+            <p class="text-3xl font-extrabold text-green-500 drop-shadow">🎉 You Won!</p>
+            <p class="text-lg text-gray-300">Great job guessing the word!</p>
             <a href="{% url 'index' %}" 
-               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-3 inline-block">
-                Home
+               class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-5 rounded-lg shadow transition-transform transform">
+                Return Home
             </a>
         </div>
     {% endif %}
 
-    <form method="post" class="flex flex-col gap-4 items-center mt-6">
+    {% if not game.finished %}
+    <form method="post" class="flex flex-col gap-4 items-center mt-8">
         {% csrf_token %}
         <div class="flex gap-2 items-center">
-            <label for="guess_text" class="font-semibold">Guess:</label>
-            <input type="text" name="guess_text" id="guess_text"
-                   maxlength="5"
-                   class="bg-gray-300 p-2 rounded-md text-lg uppercase tracking-widest text-center"
+            <input type="text" name="guess_text" id="guess_text" maxlength="5"
+                   class="bg-gray-900 border border-gray-700 p-3 rounded-md text-lg uppercase tracking-widest text-center text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-400"
+                   placeholder="Enter word"
                    required {% if guesses >= 5 or game.finished %}disabled{% endif %}>
         </div>
         
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded disabled:opacity-50"
-                type="submit" {% if guesses >= 5 or game.finished %}disabled{% endif %}>
+        <button type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-8 rounded-lg shadow-md transition-all transform disabled:opacity-40"
+            {% if guesses >= 5 or game.finished %}disabled{% endif %}>
             Submit Guess
         </button>
     </form>
+    {% endif %}
+</div>
 {% endblock content %}

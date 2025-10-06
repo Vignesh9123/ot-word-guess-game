@@ -11,7 +11,12 @@
 }
     </style>
 </head>
-<body class="bg-gray-200 p-5">
+<body class="bg-gray-900 p-5">
+    <div class="text-center mb-12">
+        <a href="{% url 'index' %}" class="text-5xl font-extrabold tracking-wide mb-3 text-gray-200">
+            <span class="text-blue-400 drop-shadow-lg">Word</span> Guessing Game
+        </a>
+    </div>
     {% block content %}
     {% endblock content %}
 </body>

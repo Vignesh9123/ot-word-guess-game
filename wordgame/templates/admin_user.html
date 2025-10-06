@@ -1,46 +1,61 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="flex flex-col items-center mt-5">
-    <h1 class="text-3xl font-bold text-center mb-6">Admin</h1>
-
-    <form method="post" class="flex flex-col gap-4 items-center w-full max-w-md">
+<div class="flex flex-col items-center mt-10 px-4 text-gray-100 min-h-[80vh]">
+    <form method="post"
+          class="flex flex-col gap-5 items-center w-full max-w-md bg-gray-900/60 border border-gray-700 rounded-xl p-6 shadow-xl backdrop-blur-sm">
         {% csrf_token %}
         <div class="flex flex-col w-full">
-            <label for="username" class="font-medium text-gray-700 mb-1">
-                Enter the username of the user you want the report for:
+            <label for="username" class="font-medium text-gray-300 mb-1">
+                Select User:
             </label>
-            <input type="text" name="username" id="username"
-                class="bg-gray-100 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none w-full"
-                required>
+            <select name="username" id="username"
+                    class="bg-gray-800 border border-gray-700 rounded-md p-3 text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none w-full"
+                    required>
+                <option value="" disabled selected>Select a user</option>
+                {% for u in users %}
+                    <option value="{{ u.username }}" {% if username == u.username %}selected{% endif %}>
+                        {{ u.username }}
+                    </option>
+                {% endfor %}
+            </select>
         </div>
-        
+
         <button type="submit"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition transform">
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transition-all transform">
             Generate Report
         </button>
     </form>
 
     {% if report %}
-    <h2 class="text-3xl font-bold text-center mt-8 mb-4">Report for {{ username }}</h2>
-    <div class="overflow-x-auto w-full max-w-4xl">
-        <table class="table-auto border-collapse border border-gray-300 w-full text-center">
-            <thead class="bg-gray-200">
-                <tr>
-                    {% for header in report.headers %}
-                        <th class="border border-gray-300 p-2 font-medium">{{ header }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in report.values %}
-                    <tr class="hover:bg-gray-100">
-                        {% for cell in row %}
-                            <td class="border border-gray-300 p-2">{{ cell }}</td>
+    <div class="w-full max-w-5xl mt-10">
+        <h2 class="text-3xl font-bold text-center text-blue-300 mb-6">
+            Report for {{ username }}
+        </h2>
+
+        <div class="overflow-x-auto rounded-xl border border-gray-700 shadow-lg">
+            <table class="table-auto w-full border-collapse">
+                <thead class="bg-gray-800/80">
+                    <tr>
+                        {% for header in report.headers %}
+                            <th class="p-3 font-semibold text-gray-200 border-b border-gray-700 uppercase text-sm tracking-wide">
+                                {{ header }}
+                            </th>
                         {% endfor %}
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="bg-gray-900/70 divide-y divide-gray-800">
+                    {% for row in report.values %}
+                        <tr class="hover:bg-gray-800/60 transition-colors">
+                            {% for cell in row %}
+                                <td class="p-3 text-gray-300 text-sm border-b border-gray-800 text-center">
+                                    {{ cell }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     {% endif %}
 </div>
