@@ -54,8 +54,12 @@ The main logic for user authentication, game play, and admin reports is implemen
    ```
    python manage.py createsuperuser
    ```
-5. Start the development server:  
+5. Init the database:
+   ```
+   python manage.py initdb
+   ```
+6. Start the development server:  
    ```
    python manage.py runserver
    ```
-6. Access the app at [http://localhost:8000/](http://localhost:8000/)
+7. Access the app at [http://localhost:8000/](http://localhost:8000/)

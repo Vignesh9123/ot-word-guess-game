@@ -44,7 +44,6 @@ class GuessForm(forms.Form):
     def clean_guess_text(self):
         guess_text = self.cleaned_data['guess_text']
 
-        # guess_text must only contain uppercase letters
         if not (guess_text.isalpha() or guess_text.isupper()):
             raise forms.ValidationError("Guess text must only contain uppercase letters.")
         

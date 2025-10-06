@@ -203,7 +203,7 @@ def admin_user(request):
     user = get_current_user(request)
     if not user or not user.is_admin:
         return redirect('index')
-    all_users = User.objects.filter(is_staff=False).order_by('username')  # fetch all users for dropdown
+    all_users = User.objects.filter(is_staff=False).order_by('username')
     report = None
     selected_username = None
 
